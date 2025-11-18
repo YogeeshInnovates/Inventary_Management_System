@@ -47,3 +47,10 @@ jobs:
       - name: Check Postgres connection
         run: |
           PGPASSWORD=testpassword psql -h localhost -U testuser -d testdb -c "\l"
+
+      - name: Run tests
+        run: |
+          pytest -v
+        env:
+          DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
+
