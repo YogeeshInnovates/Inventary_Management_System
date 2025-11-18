@@ -49,8 +49,7 @@ jobs:
           PGPASSWORD=testpassword psql -h localhost -U testuser -d testdb -c "\l"
 
       - name: Run tests
-        run: |
-          pytest -v
+        run: pytest -v
         env:
+          PYTHONPATH: ${{ github.workspace }}
           DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
-
