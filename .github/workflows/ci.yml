@@ -22,14 +22,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # - name: Run simple tests
-      #   run: pytest -v tests/unit_test
-
-      - name: Set DB env var
-        run: echo "DATABASE_URL_TEST=postgresql://postgres:password@postgres:5432/inventary_test" >> $GITHUB_ENV
-
       - name: Check DB connection
         run: |
           python -c "import os; import psycopg2; conn = psycopg2.connect(os.getenv('DATABASE_URL_TEST')); print('✅ DB connected successfully'); conn.close()"
         env:
-          DATABASE_URL_TEST: ${{ env.DATABASE_URL_TEST }}
+          DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }}
