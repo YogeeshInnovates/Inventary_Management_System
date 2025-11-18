@@ -13,6 +13,10 @@ jobs:
     services:
       postgres:
         image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
         ports:
           - 5432:5432
         options: >-
@@ -33,16 +37,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Inject full DB URL from secret
-      - name: Set DB env vars
-        run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-          echo "DATABASE_URL_TEST=${{ secrets.DATABASE_URL_TEST }}" >> $GITHUB_ENV
+      # Set test DB URL from secret
+      - name: Set test DB env
+        run: echo "DATABASE_URL_TEST=${{ secrets.DATABASE_URL_TEST }}" >> $GITHUB_ENV
 
       - name: Run Alembic migrations
         run: alembic upgrade head
         env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
+          DATABASE_URL: ${{ env.DATABASE_URL_TEST }}
 
       - name: Run Tests
         run: pytest -v
