@@ -9,11 +9,13 @@ class User(Base):
     updated_at = Column(DateTime,default = datetime.now)
 
     name = Column(String(50),nullable = False)
-    email = Column(String(20),unique = True,index = True,nullable = False)
-    password = Column(String(100),nullable = False)
+    email = Column(String(200),unique = True,index = True,nullable = False)
+    password = Column(String(200),nullable = False)
     phone = Column(String(11),nullable = False)
     role = Column(String(20),default = "user")
 
+    pick_object = relationship("User_Pick_object", back_populates="user")
+    
 class Category(Base):
     __tablename__="categories"
     id = Column(Integer,primary_key = True,index=True)
@@ -23,7 +25,7 @@ class Category(Base):
     created_at = Column(DateTime,default = datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
-    products = relationship("Product",back_populates = "category")
+    products = relationship("Products",back_populates = "category")
 
 class Supplier(Base):
     __tablename__="suppliers"
@@ -63,6 +65,13 @@ class Products(Base):
     purchases = relationship("Purchase",back_populates = "product")
     sales = relationship("Sales",back_populates = "product")
 
+     # ✅ Add this relationship line
+    inventary_products = relationship(
+        "Inventary_products",
+        back_populates="product",
+        cascade="all, delete-orphan"
+    )
+
 class Purchase(Base):
     __tablename__ = "purchases"
     id = Column(Integer,primary_key = True,index=True)
@@ -72,7 +81,7 @@ class Purchase(Base):
     purchase_price= Column(Numeric(10,2),nullable = False)
     purchase_date = Column(DateTime,default = datetime.now)
 
-    product = relationship("Product",back_populates = "purchases")
+    product = relationship("Products",back_populates = "purchases")
     supplier = relationship("Supplier")
 
 
@@ -86,6 +95,32 @@ class Sales(Base):
     customer_name = Column(String(100),nullable = True)
 
 
-    product = relationship("Product",back_populates = "sales")
+    product = relationship("Products",back_populates = "sales")
+
+
+class Inventary_products(Base):
+    __tablename__ ="inventary_products"
+    id = Column(Integer,primary_key = True,index = True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    name = Column(String(100),nullable = False)
+    sku = Column(String(50),unique = True,nullable = False)
+    quantity_in_stock = Column(Integer,default = 0)
+    quantity_taken_byuser=Column(Integer,default =0)
+      
+    product = relationship("Products", back_populates="inventary_products")
+    
+
+class User_Pick_object(Base):
+    __tablename__ = "user_pick_object"
+    id = Column(Integer,primary_key = True,index = True)
+    Name_of_object_taker = Column(String(50),index = True)
+    product_id = Column(Integer,ForeignKey("products.id"),nullable = False)
+    quantity_of_taking_product = Column(Integer,nullable = False)
+    picking_date = Column(DateTime , default = datetime.now)
+    user_id = Column(Integer,ForeignKey("users.id"),nullable = False)
+    status_of_getting = Column(String(20),index = True)
+    return_date_time = Column(DateTime)
+
+    user= relationship("User",back_populates = "pick_object")
 
 

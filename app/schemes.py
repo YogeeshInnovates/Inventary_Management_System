@@ -61,6 +61,15 @@ class SalesData(BaseModel):
     customer_name: str
     total_revenue: float
 
+class Users_Pick_objects(BaseModel):
+
+    Name_of_object_taker: str
+    product_id : int
+    quantity_of_taking_product : int
+    picking_date : Optional[datetime] = datetime.now()
+   
+    status_of_getting  : str
+    return_date_time :Optional[datetime] = datetime.now()
 
     class Config:
         orm_mode = True
