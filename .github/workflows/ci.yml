@@ -8,20 +8,15 @@ on:
 
 jobs:
   test:
-    name: Run Tests in Docker
     runs-on: ubuntu-latest
 
     services:
       postgres:
         image: postgres:15
-        env:
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U ${{ secrets.DB_USER }}"
+          --health-cmd="pg_isready -U postgres"
           --health-interval=5s
           --health-timeout=5s
           --health-retries=5
@@ -38,12 +33,18 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # Inject full DB URL from secret
+      - name: Set DB env vars
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+          echo "DATABASE_URL_TEST=${{ secrets.DATABASE_URL_TEST }}" >> $GITHUB_ENV
+
       - name: Run Alembic migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: alembic upgrade head
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
 
       - name: Run Tests
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
         run: pytest -v
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL_TEST }}
