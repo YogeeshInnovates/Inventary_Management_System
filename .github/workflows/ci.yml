@@ -26,7 +26,7 @@ jobs:
       #   run: pytest -v tests/unit_test
 
       - name: Set DB env var
-        run: echo "DATABASE_URL_TEST=postgresql://postgres:password@localhost:5432/inventary_test" >> $GITHUB_ENV
+        run: echo "DATABASE_URL_TEST=postgresql://postgres:password@postgres:5432/inventary_test" >> $GITHUB_ENV
 
       - name: Check DB connection
         run: |
