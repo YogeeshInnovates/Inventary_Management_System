@@ -24,7 +24,8 @@ jobs:
 
       # - name: Run simple tests
       #   run: pytest -v tests/unit_test
-      - name: Run tests
+      - name: Run Tests
         run: python -m pytest tests/unit_test -v
         env:
           PYTHONPATH: ${{ github.workspace }}
+          DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }}
