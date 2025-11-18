@@ -10,6 +10,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ${{ secrets.POSTGRES_USER }}" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,10 +35,15 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt psycopg2-binary
 
-      - name: Check DB connection
+      - name: Wait for Postgres
         run: |
-          python -c "import os; import psycopg2; conn = psycopg2.connect(os.getenv('DATABASE_URL_TEST')); print('✅ DB connected successfully'); conn.close()"
-        env:
-          DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }}
+          until pg_isready -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }}; do
+            echo "Waiting for database..."
+            sleep 2
+          done
+        
+      - name: Check Postgres connection
+        run: |
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h localhost -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -c "\l"

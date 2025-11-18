@@ -31,8 +31,7 @@ def db_session():
         db.close()
         transection.rollback()
         connection.close()
-        
-
+    
 
 @pytest.fixture
 def category_list(db_session):
