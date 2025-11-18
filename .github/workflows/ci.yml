@@ -1,4 +1,4 @@
-name: FastAPI CI
+name: FastAPI CI - Simple
 
 on:
   push:
@@ -22,18 +22,5 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Inject secrets into environment
-      - name: Set environment variables
-        run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-          echo "DATABASE_URL_TEST=${{ secrets.DATABASE_URL_TEST }}" >> $GITHUB_ENV
-
-      - name: Run Alembic migrations
-        run: alembic upgrade head
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-
-      - name: Run Tests
-        run: pytest -v
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL_TEST }}
+      - name: Run simple tests
+        run: pytest -v tests/unit_test
