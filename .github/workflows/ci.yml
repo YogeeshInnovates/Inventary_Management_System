@@ -17,6 +17,8 @@ jobs:
           POSTGRES_USER: testuser
           POSTGRES_PASSWORD: testpassword
           POSTGRES_DB: testdb
+          EXPIRE_MINUTES: ${{ secrets.EXPIRE_MINUTES }}
+          DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
         ports:
           - 5432:5432
         options: >-
