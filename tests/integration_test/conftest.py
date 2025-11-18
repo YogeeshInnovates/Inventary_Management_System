@@ -8,10 +8,10 @@ from sqlalchemy.orm import sessionmaker
 from passlib.context import CryptContext
 from app.models import User,Inventary_products,Products, Category,Supplier,Sales,User_Pick_object
 from datetime import datetime
+from app.config import DATABASE_URL_TEST
+# POSTGRE_URL = 'postgresql://postgres:password@localhost/inventary_test'
 
-POSTGRE_URL = 'postgresql://postgres:password@localhost/inventary_test'
-
-engine = create_engine(POSTGRE_URL)
+engine = create_engine(DATABASE_URL_TEST)
 SessionMaker = sessionmaker(autocommit = False,autoflush=False,bind = engine)
 Base.metadata.create_all(bind = engine)
 
