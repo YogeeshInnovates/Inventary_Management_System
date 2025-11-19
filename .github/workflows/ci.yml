@@ -9,7 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
+    # Postgres service for testing
     services:
       postgres:
         image: postgres:15
@@ -17,8 +18,6 @@ jobs:
           POSTGRES_USER: testuser
           POSTGRES_PASSWORD: testpassword
           POSTGRES_DB: testdb
-          EXPIRE_MINUTES: ${{ secrets.EXPIRE_MINUTES }}
-          DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
         ports:
           - 5432:5432
         options: >-
@@ -27,18 +26,29 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    # Job-level environment variables
+    env:
+      EXPIRE_MINUTES: 60  # Default or replace with a secret
+      DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
+
     steps:
+      # Checkout the repo
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Setup Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
+      # Install dependencies
       - name: Install dependencies
-        run: pip install -r requirements.txt psycopg2-binary
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt psycopg2-binary
 
+      # Wait for Postgres to be ready
       - name: Wait for Postgres
         run: |
           until pg_isready -h localhost -p 5432 -U testuser; do
@@ -46,12 +56,15 @@ jobs:
             sleep 2
           done
 
+      # Optional: Check Postgres connection
       - name: Check Postgres connection
         run: |
           PGPASSWORD=testpassword psql -h localhost -U testuser -d testdb -c "\l"
 
+      # Run tests
       - name: Run tests
         run: pytest -v
         env:
+          EXPIRE_MINUTES: ${{ env.EXPIRE_MINUTES }}
+          DATABASE_URL_TEST: ${{ env.DATABASE_URL_TEST }}
           PYTHONPATH: ${{ github.workspace }}
-          DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
