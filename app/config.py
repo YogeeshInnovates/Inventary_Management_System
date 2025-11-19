@@ -26,7 +26,7 @@ load_dotenv()
 
 SECREATE_KEY = os.getenv("SECREATE_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-EXPIRE_MINUTES = int(os.getenv("EXPIRE_MINUTES"))
+EXPIRE_MINUTES = int(os.getenv("EXPIRE_MINUTES", 30))
 
 # 1️⃣ PRIORITY: if CI test database URL exists → use it
 DATABASE_URL_TEST = os.getenv("DATABASE_URL_TEST")

@@ -43,6 +43,6 @@ jobs:
       - name: Run tests
         run: pytest -v
         env:
-          EXPIRE_MINUTES: ${{ env.EXPIRE_MINUTES }}
+          EXPIRE_MINUTES: 30
           DATABASE_URL_TEST: ${{ env.DATABASE_URL_TEST }}
           PYTHONPATH: ${{ github.workspace }}
