@@ -36,7 +36,7 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Export test DB URL
+      - name: Export Test DB URL
         run: |
           echo "DATABASE_URL_TEST=postgresql://testuser:testpassword@localhost:5432/testdb" >> $GITHUB_ENV
 
