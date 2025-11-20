@@ -44,7 +44,7 @@ jobs:
         run: pytest -v
         env:
           EXPIRE_MINUTES: 30
-          SECREATE_KEY: "screatekey1234"
-          ALGORITHM: "HS256"
+          SECREATE_KEY: ${{secrets.SECREATE_KEY}}
+          ALGORITHM: ${{secrets.ALGORITHM}}
           DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
           PYTHONPATH: ${{ github.workspace }}
