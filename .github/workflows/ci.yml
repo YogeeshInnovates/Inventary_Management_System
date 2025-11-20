@@ -7,6 +7,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+
+        ports:
+          - "5432:5432"
+
+        options: >-
+          --health-cmd="pg_isready -U testuser -d testdb"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
 
       - name: Checkout code
@@ -20,28 +37,7 @@ jobs:
       - name: Install dependecies
         run: |
           pip install -r requirements.txt
-  
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    services: 
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpassword
-          POSTGRES_DB: testdb
 
-        ports:
-          - "5432:5432"
-
-        options: >-
-          --health-cmd="pg_isready -U testuser -d testdb"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=5
-    steps:
-            
       - name: run pytest
         run: pytest -v
         env:
