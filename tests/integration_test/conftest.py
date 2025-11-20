@@ -14,18 +14,31 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-TEST_DB_PASSWORD = os.getenv("TEST_DB_PASSWORD")
-TEST_DB_USER  = os.getenv("TEST_DB_USER")
-TEST_DB_PORT  = os.getenv("TEST_DB_PORT")
-TEST_DB_NAME  = os.getenv("TEST_DB_NAME")
-TEST_DB_HOST  = os.getenv("TEST_DB_HOST")
-DATABASE_URL_TEST =  f"postgresql://{TEST_DB_USER}:{TEST_DB_PASSWORD}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
+# TEST_DB_PASSWORD = os.getenv("TEST_DB_PASSWORD")
+# TEST_DB_USER  = os.getenv("TEST_DB_USER")
+# TEST_DB_PORT  = os.getenv("TEST_DB_PORT")
+# TEST_DB_NAME  = os.getenv("TEST_DB_NAME")
+# TEST_DB_HOST  = os.getenv("TEST_DB_HOST")
+# DATABASE_URL_TEST =  f"postgresql://{TEST_DB_USER}:{TEST_DB_PASSWORD}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
 
-# POSTGRE_URL = 'postgresql://postgres:password@localhost/inventary_test'
+# # POSTGRE_URL = 'postgresql://postgres:password@localhost/inventary_test'
+
+# engine = create_engine(DATABASE_URL_TEST)
+# SessionMaker = sessionmaker(autocommit = False,autoflush=False,bind = engine)
+# Base.metadata.create_all(bind = engine)
+
+
+# Directly read CI-exported variable
+DATABASE_URL_TEST = os.environ.get("DATABASE_URL_TEST")
+
+if not DATABASE_URL_TEST:
+    raise Exception("❌ DATABASE_URL_TEST not found in environment!")
+
+print("🔌 Using Test DB:", DATABASE_URL_TEST)
 
 engine = create_engine(DATABASE_URL_TEST)
-SessionMaker = sessionmaker(autocommit = False,autoflush=False,bind = engine)
-Base.metadata.create_all(bind = engine)
+SessionMaker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base.metadata.create_all(bind=engine)
 
 pwd_context = CryptContext(schemes=["bcrypt"],deprecated = "auto")
 @pytest.fixture
