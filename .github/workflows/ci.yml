@@ -5,47 +5,47 @@ on:
     branches: ["main"]
 
 jobs:
-    build:
-      runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-      services:
-        postgres:
-          image: postgres:13
-          env:
-            POSTGRES_USER: testuser
-            POSTGRES_PASSWORD: testpassword
-            POSTGRES_DB: testdb
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
 
-          ports:
-            - "5432:5432"
+        ports:
+          - "5432:5432"
 
-          options: >-
-            --health-cmd = "pg_isready -U testuser -d testdb"
-            --health-interval = 10s
-            --health-timeout= 5s
-            --health-retries= 5
-      steps:
+        options: >-
+          --health-cmd="pg_isready -U testuser -d testdb"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
 
-        - name: Checkout code
-          uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: setup pyhton
-          uses: actions/setup-python@v4
-          with:
-            python-version: "3.11"
+      - name: setup pyhton
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
-        - name: Install dependecies
-          run: |
-            pip install -r requirements.txt
+      - name: Install dependecies
+        run: |
+          pip install -r requirements.txt
 
-        - name: run pytest
-          run: pytest -v
-          env:
-            EXPIRE_MINUTES: 30
-            SECREATE_KEY: ${{secrets.SECREATE_KEY}}
-            ALGORITHM: ${{secrets.ALGORITHM}}
-            DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
-            PYTHONPATH: ${{ github.workspace }}
+      - name: run pytest
+        run: pytest -v
+        env:
+          EXPIRE_MINUTES: 30
+          SECREATE_KEY: ${{secrets.SECREATE_KEY}}
+          ALGORITHM: ${{secrets.ALGORITHM}}
+          DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
+          PYTHONPATH: ${{ github.workspace }}
 
 
 
